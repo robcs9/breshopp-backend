@@ -1,2 +1,2 @@
 # breshopp-api
-APIs usadas no projeto https://github.com/robcs9/breshoppdemo
+Este repositório é dedicado às APIs usadas no projeto [Breshopp](https://github.com/robcs9/breshoppdemo)
