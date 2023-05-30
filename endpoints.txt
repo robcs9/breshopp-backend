@@ -20,3 +20,6 @@ negociações são serão armazenadas na base, apenas publicações próprias;
 alterar history.html -> publications.html
 
 usar select com options para categorias durante a criação/edição de publicações
+
+
+---
