@@ -10,14 +10,38 @@ app.listen(port, () => {
 
 app.get('/', (req, res) => {
     res.send(`Bem vindo às nossas APIs<br/><br/>
-    <a href='http://127.0.0.1:${port}/admin'>Administradores</a><br/><br/>
-    <a href='http://127.0.0.1:${port}/user'>Usuários</a><br/><br/>
-    <a href='http://127.0.0.1:${port}/publication'>Publicações</a><br/><br/>
-    <a href='http://127.0.0.1:${port}/category'>Categorias</a>`);
+    <a href='/admin'>Administradores</a><br/><br/>
+    <a href='/user'>Usuários</a><br/><br/>
+    <a href='/publication'>Publicações</a><br/><br/>
+    <a href='/category'>Categorias</a>`);
 });
+
+
+// Usando parâmetros de query
 app.get('/admin', (req, res) => {
-    res.send(administradores);
+    let admin = {};
+    administradores.administrador.forEach((elem) => {
+        if(elem.id_admin == req.query.id_admin) {
+            admin = elem;
+        }
+    });
+    res.send(admin);
 });
+
+// Usando parâmetros nas rotas
+app.get('/admin/:id', (req, res) => {
+    let admin = {};
+    administradores.administrador.forEach((elem) => {
+        if(elem.id_admin == req.params.id) {
+            admin = elem;
+        }
+    });
+    res.send(admin);
+});
+
+// Usando body parsing
+// [...]
+
 app.get('/user', (req, res) => {
     res.send(usuarios);
 });
