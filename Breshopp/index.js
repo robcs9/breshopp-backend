@@ -3,17 +3,36 @@ const app = express();
 const port = 3000;
 const bodyParser = require('body-parser');
 var urlencodedParser = bodyParser.urlencoded({ extended: false });
-
+app.use(express.static('public'));
+const md5 = require('md5');
+app.use(express.json());
 app.listen(port, () => {
     console.log(`app is listening at port ${port}`);
 });
 
+// POST
+app.post('/buscarAdminPorEmail', urlencodedParser, (req, res) => {
+    let email = req.body.email;
+    // consultar através de flag booleana para evitar erro no node após
+    // cada busca bem sucedida
+    administradores.administrador.forEach(
+        elem => {
+            if(email == elem.email) {
+                return res.send(elem);
+            }
+        }
+    );
+    /*for(let i in administradores.administrador) {
+        if(email == administradores.administrador[i].email) {
+            return res.send(administradores.administrador[i]);
+        }
+    }*/
+    res.send(`E-mail "${req.body.email}" não encontrado na base`);
+});
+
+// GET
 app.get('/', (req, res) => {
-    res.send(`Bem vindo às nossas APIs<br/><br/>
-    <a href='/admin'>Administradores</a><br/><br/>
-    <a href='/user'>Usuários</a><br/><br/>
-    <a href='/publication'>Publicações</a><br/><br/>
-    <a href='/category'>Categorias</a>`);
+    res.send(``);
 });
 
 
@@ -25,6 +44,22 @@ app.get('/admin', (req, res) => {
             admin = elem;
         }
     });
+    
+    //isEmpty check
+    if(Object.keys(admin).length == 0) { 
+        console.log('Query vazia, retornando todos os dados dos administradores')
+        admin = administradores.administrador;
+        
+        // Encrypting password with md5
+        for(let itr in admin) {
+            admin[itr].senha = md5(admin[itr].senha);
+        }
+
+        return res.send(admin);
+    }
+    // Encrypting password with md5
+    admin.senha = md5(admin.senha);
+    
     res.send(admin);
 });
 
@@ -65,7 +100,8 @@ app.get('/category', (req, res) => {
     res.send(produtos);
 });*/
 
-// representação das tabelas em formato json com 10 instâncias para cada
+
+// Representação das tabelas em formato json.
 
 let administradores = {
     "administrador": [
@@ -488,18 +524,3 @@ let publicacoes = {
 
     ]
 };
-
-/*let usuarios = [
-    {
-        publicacoes : []
-    },
-    {
-
-    }
-];
-let publicacoes = [
-    {
-        publicacoes : []
-    }
-];
-let fotos */
