@@ -23,3 +23,6 @@ usar select com options para categorias durante a criação/edição de publica�
 
 
 ---
+- Atenção aos endpoints que devem estar inseridos dentro de outros caminhos
+- Incluir data de finalização e criação como colunas das publicações no BD
+- remover tachometer do painel de admin e modificar a barra de navegação no topo para alinhar com todas as demais páginas relacionadas

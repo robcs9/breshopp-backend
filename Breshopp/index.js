@@ -3,61 +3,69 @@ const app = express();
 const port = 3000;
 const bodyParser = require('body-parser');
 var urlencodedParser = bodyParser.urlencoded({ extended: false });
-app.use(express.static('public'));
 const md5 = require('md5');
+
+app.use(express.static('public'));
 app.use(express.json());
+
 app.listen(port, () => {
     console.log(`app is listening at port ${port}`);
 });
 
-// POST
+// POSTs
+
+// Template para APIs 1
+// Robson
 app.post('/buscarAdminPorEmail', urlencodedParser, (req, res) => {
     let email = req.body.email;
-    // consultar através de flag booleana para evitar erro no node após
-    // cada busca bem sucedida
+    let encontrado = false;
+    let r = {}; // resultado
+    
     administradores.administrador.forEach(
         elem => {
             if(email == elem.email) {
-                return res.send(elem);
+                encontrado = true;
+                r = elem;
             }
         }
     );
-    /*for(let i in administradores.administrador) {
-        if(email == administradores.administrador[i].email) {
-            return res.send(administradores.administrador[i]);
-        }
-    }*/
-    res.send(`E-mail "${req.body.email}" não encontrado na base`);
+
+    if(!encontrado) {
+        res.send(`E-mail "${req.body.email}" não encontrado.`);
+        console.log("Busca mal sucedida.");
+    } else {
+        res.send(r);
+        console.log("Busca realizada com sucesso.")
+    }
 });
 
-// GET
-app.get('/', (req, res) => {
-    res.send(``);
-});
 
+
+// GETs
 
 // Usando parâmetros de query
 app.get('/admin', (req, res) => {
     let admin = {};
+
     administradores.administrador.forEach((elem) => {
         if(elem.id_admin == req.query.id_admin) {
             admin = elem;
         }
     });
     
-    //isEmpty check
+    // Checando se a requesição possui parâmetros de busca
     if(Object.keys(admin).length == 0) { 
         console.log('Query vazia, retornando todos os dados dos administradores')
-        admin = administradores.administrador;
-        
-        // Encrypting password with md5
-        for(let itr in admin) {
-            admin[itr].senha = md5(admin[itr].senha);
+        admin = administradores;
+
+        // Encriptando senha com hash md5
+        for(let itr in admin.administrador) {
+            admin.administrador[itr].senha = md5(admin.administrador[itr].senha);
         }
 
         return res.send(admin);
     }
-    // Encrypting password with md5
+    // Encriptando senha com hash md5
     admin.senha = md5(admin.senha);
     
     res.send(admin);
@@ -74,9 +82,6 @@ app.get('/admin/:id', (req, res) => {
     res.send(admin);
 });
 
-// Usando body parsing
-// [...]
-
 app.get('/user', (req, res) => {
     res.send(usuarios);
 });
@@ -86,20 +91,6 @@ app.get('/publication', (req, res) => {
 app.get('/category', (req, res) => {
     res.send(categorias);
 });
-
-/*app.post('/addPublicacao', urlencodedParser, (req, res) => {
-    var codigo = req.body.codigo;
-    var nome = req.body.nome;
-    var preco = req.body.preco;
-    var novaPublicacao = {
-        codigo: codigo,
-        nome: nome,
-        preco: preco
-    }
-    produtos.push(novaPublicacao)
-    res.send(produtos);
-});*/
-
 
 // Representação das tabelas em formato json.
 
