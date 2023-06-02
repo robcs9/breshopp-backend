@@ -9,11 +9,6 @@ endpoints para autenticação?
 
 new-publication -> enviar formulário -> recuperar dados -> inserir na base -> gerar tela no site? (a tela de publicação deve se comportar como uma template vazia que é preenchida com os dados sempre que for inserida uma publicação nova na base?); onsubmit -> get the template screen, fill the screen with all the data provided, build/redeploy.
 
-naming attributes (?):
-user id = uid
-product id = pid
-category id = cid
-
 --
 
 negociações são serão armazenadas na base, apenas publicações próprias;

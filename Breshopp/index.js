@@ -9,12 +9,12 @@ app.use(express.static('public'));
 app.use(express.json());
 
 app.listen(port, () => {
-    console.log(`app is listening at port ${port}`);
+    console.log(`Listening on port ${port}`);
 });
 
 // POSTs
 
-// Template para APIs 1
+// Template para APIs 1.0 Busca/Leitura/Select
 // Robson
 app.post('/buscarAdminPorEmail', urlencodedParser, (req, res) => {
     let email = req.body.email;
@@ -32,7 +32,7 @@ app.post('/buscarAdminPorEmail', urlencodedParser, (req, res) => {
 
     if(!encontrado) {
         res.send(`E-mail "${req.body.email}" não encontrado.`);
-        console.log("Busca mal sucedida.");
+        console.log("Busca retornou vazia.");
     } else {
         res.send(r);
         console.log("Busca realizada com sucesso.")
@@ -40,9 +40,118 @@ app.post('/buscarAdminPorEmail', urlencodedParser, (req, res) => {
 });
 
 
+// Template para APIs 1.1 Criação/Cadastro/Insert
+// SeuNome
+app.post('/cadastrarAdmin', urlencodedParser, (req, res) => {
+    let novoAdmin = {
+        "id_admin": administradores.administrador.length+1,
+        "nome": req.body.nome,
+        "sobrenome": req.body.sobrenome,
+        "email": req.body.email,
+        "senha": req.body.senha
+    };
+    let emailEncontrado = false;
+    let adminEncontrado = {};
+
+    administradores.administrador.forEach(
+        elem => {
+            if(novoAdmin.email == elem.email) {
+                emailEncontrado = true;
+                adminEncontrado = elem;
+            }
+        }
+    );
+
+    if(!emailEncontrado) {
+        administradores.administrador.push(novoAdmin);
+        console.log(`Administrador criado com sucesso`);
+        console.log(administradores.administrador.at(-1));
+    } else {
+        console.log("Criação de Administrador com e-mail repetido negada.");
+        console.log(adminEncontrado);
+    }
+    res.redirect('/cadastrarAdmin.html');
+    
+    // Ignorar o código comentado abaixo
+    /*
+    // Tratamento das posições vazias
+    let posicaoVazia = -1;
+    for(let i in administradores.administrador) {
+        if(administradores.administrador[i] == {}) {
+            posicaoVazia = i;
+        }
+        if(novoAdmin.email == administradores.administrador[i].email) {
+            emailEncontrado = true;
+            adminEncontrado = elem;
+        }
+    }*/
+});
+
+
+// Template para APIs 1.2 Exclusão/Remoção/Delete
+// SeuNome
+app.post('/excluirAdmin', urlencodedParser, (req, res) => {
+    let email = req.body.email;
+    let encontrado = false;
+
+    administradores.administrador.forEach(
+        (elem) => {
+            if(email == elem.email) {
+                encontrado = true;
+                administradores.administrador[elem.id_admin - 1] = {};
+            }
+        }
+    );
+    if(!encontrado) {
+        console.log('Administrador não encontrado');
+    } else {
+        console.log('Administrador excluído com sucesso')
+        console.log(administradores.administrador);
+    }
+    res.redirect('/excluirAdmin.html');
+});
+
+
+// Template para APIs 1.3 Atualização
+// SeuNome
+app.post('/atualizarAdmin', urlencodedParser, (req, res) => {
+    let email = req.body.email;
+    let encontrado = false;
+    let posicaoEncontrada = -1;
+    let adminAtualizado = {};
+    
+    administradores.administrador.forEach(
+        (elem) => {
+            if(email == elem.email) {
+                encontrado = true;
+                posicaoEncontrada = elem.id_admin - 1;
+                adminAtualizado = elem;
+            }
+        }
+    );
+    console.log(adminAtualizado); // desenvolver função para autopreencher os campos do formulário com os dados atuais pré-atualização
+
+    if(!encontrado) {
+        console.log('Administrador não encontrado');
+    } else {
+        if(req.body.nome)
+            adminAtualizado.nome = req.body.nome;
+        if(req.body.sobrenome)
+            adminAtualizado.sobrenome = req.body.sobrenome;
+        if(req.body.email)
+            adminAtualizado.email = req.body.email;
+        if(req.body.senha)
+            adminAtualizado.senha = req.body.senha;
+
+        administradores.administrador[posicaoEncontrada] = adminAtualizado;
+        console.log('Administrador atualizado com sucesso')
+        console.log(administradores.administrador);
+    }
+    res.redirect('/atualizarAdmin.html');
+});
 
 // GETs
-
+// Template para APIs 2.0 Busca/Leitura/Select
 // Usando parâmetros de query
 app.get('/admin', (req, res) => {
     let admin = {};
@@ -71,6 +180,7 @@ app.get('/admin', (req, res) => {
     res.send(admin);
 });
 
+// Template para APIs 2.1
 // Usando parâmetros nas rotas
 app.get('/admin/:id', (req, res) => {
     let admin = {};
@@ -82,12 +192,17 @@ app.get('/admin/:id', (req, res) => {
     res.send(admin);
 });
 
+// Retorna todos os usuários
 app.get('/user', (req, res) => {
     res.send(usuarios);
 });
+
+// Retorna todas as publicações
 app.get('/publication', (req, res) => {
     res.send(publicacoes);
 });
+
+// Retorna todas as categorias
 app.get('/category', (req, res) => {
     res.send(categorias);
 });
